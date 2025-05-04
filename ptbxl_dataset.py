@@ -1,6 +1,6 @@
 ### PTB-XL data loading code adapted from https://physionet.org/content/ptb-xl/1.0.0/ ###
 
-PTBXL_PATH = '/path/to/data'
+PTBXL_PATH = 'C:/Users/Chacha/Downloads/CS598/ptb-xl-a-large-publicly-available-electrocardiography-dataset-1.0.3/'
 
 import numpy as np
 import torch

@@ -10,7 +10,7 @@ import torch
 from torch import nn
 from torch.distributions import RelaxedBernoulli, Bernoulli
 
-from functional import (rand_temporal_warp, baseline_wander, gaussian_noise, rand_crop, rand_crop_base, spec_aug, rand_displacement, magnitude_scale)
+from functional import (rand_temporal_warp, baseline_wander, gaussian_noise, rand_crop, spec_aug, rand_displacement, magnitude_scale)
 
 import warp_ops
 
@@ -71,8 +71,9 @@ class _Operation(nn.Module):
                  batch_size=None):
 
         prob = torch.sigmoid(self.probability).unsqueeze(0)
-        prob = prob.repeat(batch_size, 1)
-        prob = 0*prob.sum() + prob[torch.arange(batch_size), label.long()]
+        prob = prob.repeat(batch_size, 1).to(label.device)
+        index = torch.arange(batch_size, device=label.device)
+        prob = 0*prob.sum() + prob[index, label.long()]
         if self.training:
             return RelaxedBernoulli(self.temperature, prob).rsample()
         else:

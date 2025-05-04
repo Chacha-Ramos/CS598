@@ -257,10 +257,11 @@ def do_aug(xecg, y, aug):
 
 def train(train_dl, val_dl, test_dl):
     loss_meter = AverageMeter()
-    if args.aug == 'learnmag':
-        aug = aug_policy.full_policy(learn_mag=True, learn_prob=False).to(device)
-        raise NotImplementedError
-    
+    # if args.aug == 'learnmag':
+    #     aug = aug_policy.full_policy(learn_mag=True, learn_prob=False).to(device)
+    #     raise NotImplementedError
+    aug = aug_policy.full_policy(learn_mag=True, learn_prob=False).to(device)
+
     hyp_params = list(aug.parameters())
     hyp_optim = torch.optim.RMSprop(hyp_params, lr=args.hyper_lr)
     

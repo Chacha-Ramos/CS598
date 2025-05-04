@@ -232,7 +232,7 @@ def train(train_dl, val_dl, test_dl, warp_aug=None):
 print("Checking if run complete")
 savepath = os.path.join(get_save_path(), 'eval_logs.ckpt')
 if os.path.exists(savepath):
-    valaucs = torch.load(savepath)['val_ld']['auc']
+    valaucs = torch.load(savepath, weights_only=False)['val_ld']['auc']
     if len(valaucs) == args.epochs:
         print(f"Finished this one {savepath}")
         import sys
