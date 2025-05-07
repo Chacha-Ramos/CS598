@@ -345,6 +345,40 @@ def train(train_dl, val_dl, test_dl):
         if epoch % 20 == 0 or epoch == args.epochs -1:
             model_saver(epoch, enc, aug, optimizer, hyp_optim, get_save_path())
             print(f"Saved model at epoch {epoch}")
+
+        # === Plot augmentation policy heatmap ===
+        import seaborn as sns
+        import matplotlib.pyplot as plt
+
+        def extract_policy_weights(policy):
+            heatmap_data = []
+            for subpolicy in policy.sub_policies:
+                for stage in subpolicy.stages:
+                    weights = stage.weights.detach().cpu().numpy()
+                    heatmap_data.append(weights)
+            return np.array(heatmap_data)
+
+        def plot_policy_heatmap(weights_matrix, op_names, task_name):
+            plt.figure(figsize=(10, 4))
+            sns.heatmap(weights_matrix, annot=True, cmap='viridis',
+                        xticklabels=op_names,
+                        yticklabels=[f"Stage {i + 1}" for i in range(weights_matrix.shape[0])])
+            plt.title(f"TaskAug Policy Weights for {task_name} Task")
+            plt.xlabel("Augmentation Operation")
+            plt.ylabel("Policy Stage")
+            plt.tight_layout()
+            plt.savefig(f"heatmap_policy_weights_{task_name}.png", dpi=300)
+            plt.close()
+
+        # Only if using TaskAug (not baseline)
+        if args.aug.startswith('learn'):
+            op_names = [
+                "TemporalWarp", "BaselineWander", "GaussianNoise",
+                "RandCrop", "RandDisplacement", "MagnitudeScale", "NoOp"
+            ]
+            task_name = args.task
+            weights_matrix = extract_policy_weights(aug)
+            plot_policy_heatmap(weights_matrix, op_names, task_name)
         
     import time
     print(time.time())
